@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utawala Star Sprints Club - Home</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #ffd700;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><rect fill="%231e3c72" width="1200" height="400"/><path fill="%232a5298" d="M0 300 Q300 250 600 300 T1200 300 V400 H0 Z"/></svg>');
+            background-size: cover;
+            background-position: center;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero.hidden {
+            display: none;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            background: #ffd700;
+            color: #1e3c72;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: transform 0.3s, background 0.3s;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: #ffed4e;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            border-bottom: 3px solid #ffd700;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: #2a5298;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #1e3c72;
+            margin-top: 0;
+        }
+
+        .card-link {
+            color: #2a5298;
+            text-decoration: none;
+        }
+
+        /* Team Photo Styles */
+        .team-photo-container {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .team-photo {
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            object-fit: cover;
+        }
+
+        .photo-caption {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        /* Footer */
+        footer {
+            background: #1e3c72;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .social-links {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            background: #2a5298;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #ffd700;
+            color: #1e3c72;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 0 1rem;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+                width: 100%;
+            }
+
+            nav ul li {
+                width: 100%;
+            }
+
+            nav ul li a {
+                display: block;
+                padding: 0.5rem;
+            }
+
+            .hero {
+                height: 350px;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .social-links {
+                gap: 0.5rem;
+            }
+
+            .social-links a {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo span {
+                font-size: 1rem;
+            }
+
+            .hero-content h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero-content p {
+                font-size: 1rem;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="logo.png" alt="Utawala Star Sprints Club Logo" class="logo-img" id="clubLogo">
+                <span>Utawala Star Sprints Club</span>
+            </div>
+            <ul id="navMenu">
+                <li><a href="#" onclick="showPage('home')">Home</a></li>
+                <li><a href="#" onclick="showPage('about')">About Us</a></li>
+                <li><a href="#" onclick="showPage('coaches')">Coaches</a></li>
+                <li><a href="#" onclick="showPage('contact')">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hero" id="heroSection">
+        <div class="hero-content">
+            <h1>Utawala Star Sprints Club</h1>
+            <p>Unleash the champion within</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- HOME PAGE -->
+        <div id="home" class="page-content active">
+            <h2>Welcome to Utawala Star Sprints Club</h2>
+            <p>We are dedicated to developing world-class sprinters in the heart of Kenya. Our club provides professional coaching, state-of-the-art training programs, and a supportive community for athletes of all levels.</p>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <h3>🏃 Professional Coaching</h3>
+                    <p>Train with certified athletics coaches who have experience at national and international levels.</p>
+                </div>
+                <div class="card">
+                    <h3>🏆 Competitive Excellence</h3>
+                    <p>Participate in local, regional, national and International competitions to showcase your talent.</p>
+                </div>
+                <div class="card">
+                    <h3>👥 Community Spirit</h3>
+                    <p>Join a family of dedicated athletes who support and motivate each other.</p>
+                </div>
+            </div>
+
+            <h3>Major Achievements</h3>
+            <ul>
+                <li>Several club members were part of the Kenyan national team at the 2025 World Athletics Championships in Tokyo and the World Relays.</li>
+                <li>Athletes Meshack Babu, Clinton Aluvi and Dennis Mwai were specifically named to the 4x100m relay squads.</li>
+                <li>Clinton Aluvi also won the coveted 100m gold medal in the African U-20 championship held in Nigeria 2025.</li>
+                <li>Ronald koech saw success in the national police championship as well as East African police championship in both 100/200M</li>
+                <li>Athletes such as Richard Ogutu, George Njenga, Eric Kimathi, Erastus mbaluka and Ronald Koech achieved major success in both the 4 * 100 and 4 * 400m relays in the East African police championship.</li>
+                <li>National Record: Sprinter Meshack Babu, who was part of the men's 4x100m relay team in China, managed to set a new Kenyan national record of 38.35 seconds at the heats in China along his teammates.</li>
+                <li>National and Military Titles: Meshack Babu won the men's 100m title at the 2024 Military Games in Abuja, Nigeria.</li>
+                <li>National Recognition and Awards: Dan Kiviasi won the coveted "Tujiamini Gold" award, which included a cash prize of Ksh 500,000 to support his 2025 World Championships qualification efforts.</li>
+                <li>Kelvin Jocktan also won the 400m of the Athletics Bingwa fest National competition finals</li>
+                <li>Louis Khawel, a recent high school graduate, dominated the men's 100m at a national event (BingwaFest 2025 Nairobi edition winners 4 by 100 relays), clocking a personal best of 10.20s in the semifinals and winning the overall title.</li>
+                <li>Jesse muigai, an upcoming athlete aged 15 years old, is bound to represent Kenya in the Africa youth Olympics in December of 2025</li>
+                <li>Coaching Recognition: The athletes' strong performances led to both the club's Head coach and assistant coach, Perpetual Mbutu and Simon Riga, being selected as officials for the Kenyan team at the World Championships in tokyo Japan and the World Relays in Guangzhou China respectively.</li>
+            </ul>
+        </div>
+
+        <!-- ABOUT US PAGE -->
+        <div id="about" class="page-content">
+            <h2>About Utawala Star Sprints Club</h2>
+            
+            <div class="team-photo-container">
+                <img src="team-photo.jpeg" alt="Utawala Star Sprints Club Team" class="team-photo">
+                <p class="photo-caption">Our dedicated team of athletes and coaches</p>
+            </div>
+            
+            <p>Founded in 2018, Utawala Stars Sprints Club has emerged as a powerhouse in Kenyan sprinting, nurturing both budding and professional sprinters. The Club has grown to become one of the leading athletics clubs in Nairobi. The club currently boasts 35 athletes, including top-tier names such as: Kenya Prisons 100m champion Dan Kiviasi, national 100m champion Meshack Babu, African U-20 100m Champion Clinton Aluvi, African decathlon silver medallist Edwin Too and 2015 African 100m champion Eunice Kadogo. At the heart of this initiative is coach Perpetual Mbutu, a former elite athlete whose passion for athletics drove her to establish the club. Emerging Talents like Dennis Mwai and Clinton Aluvi who have proven to be exceptionally talented athletes, managed to get sponsorship by Africa's fastest man, Ferdinand Omanyala. They earned invitations to the national World Relay trials after spectacular performances at the National Championships, with Aluvi finishing fourth in the men's 100m final in his debut.</p>
+            
+            <div class="READ MORE">
+                <a href="https://www.the-star.co.ke/sports/2025-04-04-coach-perpetual-and-utawala-sprints-club-are-powering-kenyas-next-speed-stars" target="_blank" rel="noopener noreferrer">More info...</a>
+            </div>
+            
+            <h3>Our Mission</h3>
+            <p>Having recently partnered with USATF central California and Frenso flyers athletics club in California for exchange programmes and cultural exchanges, our ongoing mission is to identify, nurture, and develop sprinting talent from the grassroots to elite levels. To provide world-class sprint training that develops athletes physically, mentally, and socially, while promoting excellence, discipline, and sportsmanship.</p>
+            
+            <h3>Our Vision</h3>
+            <p>To be the premier sprint club in Kenya, producing national and international champions who inspire the next generation of athletes. We also envision a future where we can give back to the community through outreach programs, promoting athletics as a means of personal and social development.</p>
+            
+            <h3>Core Values</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Excellence</h3>
+                    <p>We strive for the highest standards in training and competition.</p>
+                </div>
+                <div class="card">
+                    <h3>Discipline</h3>
+                    <p>We instill dedication, consistency, and commitment in all our athletes.</p>
+                </div>
+                <div class="card">
+                    <h3>Integrity</h3>
+                    <p>We promote fair play, honesty, and respect in all activities. We have done this by strictly adhering to the World Athletics anti-doping measures.</p>
+                </div>
+            </div>
+            
+            <h3>Community Outreach & Charity Work</h3>
+            <p>Utawala Star Sprints Club is committed not only to athletic excellence but also to uplifting the community. Over the years, the club has organized and participated in various charitable initiatives, including:</p>
+            
+            <ul>
+                <li>Donating training equipment and sports kits to underprivileged youth athletes.</li>
+                <li>Recruiting street kids to sharp and well equiped sports people.</li>
+                <li>Collaborating with local organizations to support children's homes through visits and donations.</li>
+                <li>Supporting the less fortunate by organising fundraisers for their wellbeing.</li>
+            </ul>
+            
+            <p>These initiatives reflect our commitment to giving back and using athletics as a force for positive change.</p>
+        </div>
+
+        <!-- COACHES PAGE -->
+        <div id="coaches" class="page-content">
+            <h2>Our Coaching Team</h2>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Coach Perpetual Mbutu</h3>
+                    <p><strong>Head Coach</strong></p>
+                    <p>IAAF Certified Coach with over 10 years of coaching experience. Former administrative police champion and specialist in sprint training mechanics with experience from training camps in Europe. Part of the Coaching staff of the Kenyan team with recognition in the World Championships 2025 among other events. Part of the Coaching officials on mulitple accounts of the U-20 national team with experience from training camps all over the world inlcuding France among other accolades.</p>
+                </div>
+             
+                <div class="card">
+                    <h3>Coach Simon Riga</h3>
+                    <p><strong>Assistant Coach</strong></p>
+                    <p>National coach of the relay team in Guangzhou, China 2025. He is known for his pivotal role and his significant contribution to Kenya's historic 4x100m relay success, helping them break a long drought to qualify for World Championships. Focuses on developing sprint talent, with his athletes achieving national recognition and international opportunities.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTACT PAGE -->
+        <div id="contact" class="page-content">
+            <h2>Contact Us</h2>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <h3>📞 Phone</h3>
+                    <p>Main: <a href="tel:+254706449949" class="card-link">+254 706 449 949</a><br>
+                       Alt: <a href="tel:+254703146087" class="card-link">+254 703 1460879</a><br>
+                    WhatsApp: <a href="https://wa.me/254706449949" target="_blank" rel="noopener noreferrer" class="card-link">+254 706 449 949</a></p>
+                </div>
+                
+                <div class="card">
+                    <h3>✉️ Email</h3>
+                    <p><a href="mailto:utawalastarsprintsclub@gmail.com" class="card-link">utawalastarsprintsclub@gmail.com</a></p>
+                </div>
+            </div>
+
+           <h3>Send Us a Message</h3>
+<form id="contactForm" action="https://formspree.io/f/mnnebrqo" method="POST">
+    <div class="form-group">
+        <label for="contactName">Name *</label>
+        <input type="text" id="contactName" name="name" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="contactEmail">Email *</label>
+        <input type="email" id="contactEmail" name="email" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="subject">Subject *</label>
+        <input type="text" id="subject" name="_subject" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="message">Message *</label>
+        <textarea id="message" name="message" rows="6" required></textarea>
+    </div>
+    
+    <button type="submit" class="btn">Send Message</button>
+</form>
+
+<div id="formStatus" style="margin-top: 1rem; padding: 1rem; border-radius: 5px; display: none;">
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2018 Utawala Star Sprints Club. All rights reserved.</p>
+        <div class="social-links">
+            <a href="https://web.facebook.com/thestarsprintsclubke/?_rdc=1&_rdr#" target="_blank" rel="noopener noreferrer">Facebook</a>
+            <a href="https://www.instagram.com/utawala_star_sprints_club/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="https://www.youtube.com/@utawalastarsprintsclub" target="_blank" rel="noopener noreferrer">YouTube</a>
+            <a href="https://www.tiktok.com/@utawalastarsprintsclub?_r=1&_t=ZM-921fv3nvFHs" target="_blank" rel="noopener noreferrer">TikTok</a>
+        </div>
+    </footer>
+
+    <script>
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                
+                // Show hero only on home page
+                const hero = document.getElementById('heroSection');
+                if (pageId === 'home') {
+                    hero.classList.remove('hidden');
+                } else {
+                    hero.classList.add('hidden');
+                }
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                subject: formData.get('subject'),
+                message: formData.get('message'),
+                timestamp: new Date().toLocaleString()
+            };
+            
+            // Option 1: Send via Formspree (recommended - replace YOUR_FORM_ID with actual ID from formspree.io)
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                const statusDiv = document.getElementById('formStatus');
+                if (response.ok) {
+                    statusDiv.style.display = 'block';
+                    statusDiv.style.background = '#d4edda';
+                    statusDiv.style.color = '#155724';
+                    statusDiv.textContent = 'Thank you for your message! We will get back to you soon.';
+                    this.reset();
+                } else {
+                    statusDiv.style.display = 'block';
+                    statusDiv.style.background = '#f8d7da';
+                    statusDiv.style.color = '#721c24';
+                    statusDiv.textContent = 'Oops! There was a problem submitting your form. Please try again.';
+                }
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            })
+            .catch(error => {
+                // Option 2: Fallback - Open email client with pre-filled data
+                const subject = encodeURIComponent(data.subject);
+                const body = encodeURIComponent(
+                    `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`
+                );
+                window.location.href = `mailto:utawalastarsprintsclub@gmail.com?subject=${subject}&body=${body}`;
+            });
+        });
+    </script>
+</body>
+</html>
