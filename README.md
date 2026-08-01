@@ -1,13 +1,7 @@
 This is the website for utawala star sprints club
 
 
-Drop the client's photos in this folder named exactly:
-
-  photo1.jpg
-  photo2.jpg
-  photo3.jpg
-  ...
-  photo30.jpg
+Drop the client's photos in the folder named gallery
 
 You don't need all 30 - the gallery only shows images that actually exist,
 so whether the client sent 27, 28, 29, or 30, just number them in order
