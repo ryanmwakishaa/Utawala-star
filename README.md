@@ -1,7 +1,7 @@
 This is the website for utawala star sprints club
 
 
-Drop the client's photos in the folder named gallery
+Drop photos in the folder named gallery
 
 You don't need all 30 - the gallery only shows images that actually exist,
 so whether the client sent 27, 28, 29, or 30, just number them in order
