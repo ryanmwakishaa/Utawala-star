@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, Save, X, Plus, Trash2, Edit2, Lock, Unlock } from 'lucide-react';
+import { defaultContent, deepMerge } from './siteContent';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -9,61 +10,7 @@ const AdminDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
-  const [content, setContent] = useState({
-    hero: {
-      title: 'Utawala Star Sprints Club',
-      subtitle: 'Unleash the champion within'
-    },
-    welcome: {
-      title: 'Welcome to Utawala Star Sprints Club',
-      text: 'We are dedicated to developing world-class sprinters in the heart of Kenya. Our club provides professional coaching, state-of-the-art training programs, and a supportive community for athletes of all levels.'
-    },
-    features: [
-      {
-        icon: '🏃',
-        title: 'Professional Coaching',
-        description: 'Train with certified athletics coaches who have experience at national and international levels.'
-      },
-      {
-        icon: '🏆',
-        title: 'Competitive Excellence',
-        description: 'Participate in local, regional, national and International competitions to showcase your talent.'
-      },
-      {
-        icon: '👥',
-        title: 'Community Spirit',
-        description: 'Join a family of dedicated athletes who support and motivate each other.'
-      }
-    ],
-    achievements: [
-      'Several club members were part of the Kenyan national team at the 2025 World Athletics Championships in Tokyo and the World Relays.',
-      'Athletes Meshack Babu, Clinton Aluvi and Dennis Mwai were specifically named to the 4x100m relay squads.',
-      'Clinton Aluvi also won the coveted 100m gold medal in the African U-20 championship held in Nigeria 2025.'
-    ],
-    mission: 'Having recently partnered with USATF central California and Frenso flyers athletics club in California for exchange programmes and cultural exchanges, our ongoing mission is to identify, nurture, and develop sprinting talent from the grassroots to elite levels.',
-    vision: 'To be the premier sprint club in Kenya, producing national and international champions who inspire the next generation of athletes.',
-    coaches: [
-      {
-        name: 'Coach Perpetual Mbutu',
-        title: 'Head Coach',
-        bio: 'IAAF Certified Coach with over 10 years of coaching experience. Former administrative police champion and specialist in sprint training mechanics.'
-      },
-      {
-        name: 'Coach Simon Riga',
-        title: 'Assistant Coach',
-        bio: 'National coach of the relay team in Guangzhou, China 2025. Known for his pivotal role in Kenya\'s historic 4x100m relay success.'
-      }
-    ],
-    contact: {
-      phone: '+254 706 449 949',
-      altPhone: '+254 703 1460879',
-      email: 'utawalastarsprintsclub@gmail.com'
-    },
-    images: {
-      logo: 'logo.png',
-      teamPhoto: 'team-photo.jpeg'
-    }
-  });
+  const [content, setContent] = useState(defaultContent);
 
   useEffect(() => {
     loadContent();
@@ -72,9 +19,16 @@ const AdminDashboard = () => {
   const loadContent = async () => {
     setLoading(true);
     try {
-      const result = await window.storage.get('utawala-content');
-      if (result && result.value) {
-        setContent(JSON.parse(result.value));
+      if (window.storage) {
+        const result = await window.storage.get('utawala-content');
+        if (result && result.value) {
+          setContent((prev) => deepMerge(prev, JSON.parse(result.value)));
+        }
+      } else {
+        const saved = localStorage.getItem('utawala-content');
+        if (saved) {
+          setContent((prev) => deepMerge(prev, JSON.parse(saved)));
+        }
       }
     } catch (error) {
       console.log('No saved content found, using defaults');
@@ -86,7 +40,11 @@ const AdminDashboard = () => {
     setSaving(true);
     setMessage('');
     try {
-      await window.storage.set('utawala-content', JSON.stringify(content));
+      if (window.storage) {
+        await window.storage.set('utawala-content', JSON.stringify(content));
+      } else {
+        localStorage.setItem('utawala-content', JSON.stringify(content));
+      }
       setMessage('✓ Content saved successfully!');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
@@ -181,6 +139,7 @@ const AdminDashboard = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
+            <a href="#" onClick={(e) => { e.preventDefault(); window.location.hash = ''; }} className="text-sm text-green-600 hover:underline mb-1 inline-block">← Back to site</a>
             <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
             <p className="text-sm text-gray-600">Utawala Star Sprints Club</p>
           </div>
@@ -213,7 +172,7 @@ const AdminDashboard = () => {
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-1 overflow-x-auto">
-            {['home', 'about', 'achievements', 'coaches', 'contact'].map(tab => (
+            {['home', 'about', 'achievements', 'coaches', 'contact', 'gallery'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -255,6 +214,51 @@ const AdminDashboard = () => {
                       onChange={(e) => updateField('hero', 'subtitle', e.target.value)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Logo picture visibility ({Math.round(content.hero.logoOpacity * 100)}%)
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={content.hero.logoOpacity}
+                      onChange={(e) => updateField('hero', 'logoOpacity', Number(e.target.value))}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">How visible the logo picture is behind the hero text.</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Logo size / zoom ({Math.round(content.hero.logoScale * 100)}%)
+                    </label>
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="3"
+                      step="0.05"
+                      value={content.hero.logoScale}
+                      onChange={(e) => updateField('hero', 'logoScale', Number(e.target.value))}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">If your logo file has extra blank space around it, increase this so the actual logo mark fills the hero better.</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Blue tint strength ({Math.round(content.hero.tintOpacity * 100)}%)
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={content.hero.tintOpacity}
+                      onChange={(e) => updateField('hero', 'tintOpacity', Number(e.target.value))}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Lower this to let more of the picture's real colors show through.</p>
                   </div>
                 </div>
               </div>
@@ -342,38 +346,6 @@ const AdminDashboard = () => {
                   rows={4}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                 />
-              </div>
-
-              <div>
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Images</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Logo URL</label>
-                    <input
-                      type="text"
-                      value={content.images.logo}
-                      onChange={(e) => setContent(prev => ({ 
-                        ...prev, 
-                        images: { ...prev.images, logo: e.target.value }
-                      }))}
-                      placeholder="e.g., logo.png or https://example.com/logo.png"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Team Photo URL</label>
-                    <input
-                      type="text"
-                      value={content.images.teamPhoto}
-                      onChange={(e) => setContent(prev => ({ 
-                        ...prev, 
-                        images: { ...prev.images, teamPhoto: e.target.value }
-                      }))}
-                      placeholder="e.g., team-photo.jpeg or https://example.com/team.jpg"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                    />
-                  </div>
-                </div>
               </div>
             </div>
           )}
@@ -504,6 +476,43 @@ const AdminDashboard = () => {
                   />
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'gallery' && (
+            <div className="space-y-6">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">Gallery Settings</h2>
+              <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-800">Auto-play photos</p>
+                  <p className="text-sm text-gray-500">When on, the Club Gallery on the home page automatically cycles through photos. When off, visitors move through photos manually using the arrows.</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer ml-4">
+                  <input
+                    type="checkbox"
+                    checked={content.gallery.autoplay}
+                    onChange={(e) => updateField('gallery', 'autoplay', e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-600 transition-colors"></div>
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Seconds between photos</label>
+                <input
+                  type="number"
+                  min="2"
+                  max="30"
+                  value={content.gallery.intervalSeconds}
+                  onChange={(e) => updateField('gallery', 'intervalSeconds', Number(e.target.value) || 4)}
+                  disabled={!content.gallery.autoplay}
+                  className="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 disabled:bg-gray-100 disabled:text-gray-400"
+                />
+              </div>
+
+              <p className="text-xs text-gray-500">Remember to click "Save All Changes" above - the live site reads this setting the next time it loads.</p>
             </div>
           )}
         </div>
