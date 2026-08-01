@@ -80,7 +80,7 @@ export const defaultContent = {
   ],
   contact: {
     phone: '+254 706 449 949',
-    altPhone: '+254 703 1460879',
+    altPhone: '+254 703 146087',
     email: 'utawalastarsprintsclub@gmail.com'
   },
   gallery: {
