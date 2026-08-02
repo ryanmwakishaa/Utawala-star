@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, Save, X, Plus, Trash2, Edit2, Lock, Unlock } from 'lucide-react';
 import { defaultContent, deepMerge } from './siteContent';
+import { fetchContent, saveContent as saveContentRemote } from './contentApi';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,19 +20,20 @@ const AdminDashboard = () => {
   const loadContent = async () => {
     setLoading(true);
     try {
-      if (window.storage) {
-        const result = await window.storage.get('utawala-content');
-        if (result && result.value) {
-          setContent((prev) => deepMerge(prev, JSON.parse(result.value)));
-        }
-      } else {
+      const remote = await fetchContent();
+      if (remote && Object.keys(remote).length > 0) {
+        setContent((prev) => deepMerge(prev, remote));
+      }
+    } catch (error) {
+      console.log('Could not reach content backend, falling back to this device\'s local copy');
+      try {
         const saved = localStorage.getItem('utawala-content');
         if (saved) {
           setContent((prev) => deepMerge(prev, JSON.parse(saved)));
         }
+      } catch (e) {
+        // no local copy either, defaults apply
       }
-    } catch (error) {
-      console.log('No saved content found, using defaults');
     }
     setLoading(false);
   };
@@ -40,15 +42,12 @@ const AdminDashboard = () => {
     setSaving(true);
     setMessage('');
     try {
-      if (window.storage) {
-        await window.storage.set('utawala-content', JSON.stringify(content));
-      } else {
-        localStorage.setItem('utawala-content', JSON.stringify(content));
-      }
-      setMessage('✓ Content saved successfully!');
+      await saveContentRemote(content);
+      localStorage.setItem('utawala-content', JSON.stringify(content));
+      setMessage('✓ Content saved successfully! Changes are now live for everyone.');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      setMessage('✗ Error saving content');
+      setMessage('✗ Error saving content — check your internet connection and try again');
     }
     setSaving(false);
   };

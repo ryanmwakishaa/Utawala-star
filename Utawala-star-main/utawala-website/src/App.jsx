@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { defaultContent, deepMerge } from './siteContent';
+import { fetchContent } from './contentApi';
 
 // Automatically picks up every photo dropped into src/assets/gallery/ -
 // any filename works, no renaming needed.
@@ -47,16 +48,26 @@ export default function App() {
 
   useEffect(() => () => clearTimeout(transitionTimeout.current), []);
 
-  // Load whatever's been saved from the admin dashboard, layered on top of the defaults
+  // Load whatever's been saved from the admin dashboard, layered on top of the defaults.
+  // This now comes from the shared backend, so every visitor sees the same content.
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('utawala-content');
-      if (saved) {
-        setData((prev) => deepMerge(prev, JSON.parse(saved)));
-      }
-    } catch (e) {
-      // no saved settings yet, defaults apply
-    }
+    fetchContent()
+      .then((remote) => {
+        if (remote && Object.keys(remote).length > 0) {
+          setData((prev) => deepMerge(prev, remote));
+        }
+      })
+      .catch(() => {
+        // Backend unreachable — fall back to whatever this browser saved before, if anything
+        try {
+          const saved = localStorage.getItem('utawala-content');
+          if (saved) {
+            setData((prev) => deepMerge(prev, JSON.parse(saved)));
+          }
+        } catch (e) {
+          // no saved settings, defaults apply
+        }
+      });
   }, []);
 
   const autoplayEnabled = data.gallery.autoplay;
