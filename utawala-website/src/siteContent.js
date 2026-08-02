@@ -70,11 +70,13 @@ export const defaultContent = {
     {
       name: 'Coach Perpetual Mbutu',
       title: 'Head Coach',
+      photo: '',
       bio: 'IAAF Certified Coach with over 10 years of coaching experience. Former administrative police champion and specialist in sprint training mechanics with experience from training camps in Europe. Part of the Coaching staff of the Kenyan team with recognition in the World Championships 2025 among other events. Part of the Coaching officials on mulitple accounts of the U-20 national team with experience from training camps all over the world inlcuding France among other accolades.'
     },
     {
       name: 'Coach Simon Riga',
       title: 'Assistant Coach',
+      photo: '',
       bio: "National coach of the relay team in Guangzhou, China 2025. He is known for his pivotal role and his significant contribution to Kenya's historic 4x100m relay success, helping them break a long drought to qualify for World Championships. Focuses on developing sprint talent, with his athletes achieving national recognition and international opportunities."
     }
   ],

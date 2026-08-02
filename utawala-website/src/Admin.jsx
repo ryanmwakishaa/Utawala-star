@@ -389,7 +389,7 @@ const AdminDashboard = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-800">Coaching Team</h2>
                 <button
-                  onClick={() => addArrayItem('coaches', { name: '', title: '', bio: '' })}
+                  onClick={() => addArrayItem('coaches', { name: '', title: '', bio: '', photo: '' })}
                   className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
                 >
                   <Plus className="w-4 h-4" />
@@ -437,6 +437,20 @@ const AdminDashboard = () => {
                         placeholder="Coach biography..."
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                       />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Photo filename</label>
+                      <input
+                        type="text"
+                        value={coach.photo || ''}
+                        onChange={(e) => updateArrayItem('coaches', index, { ...coach, photo: e.target.value })}
+                        placeholder="e.g., perpetual.jpg"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Type the exact filename of the photo you've saved in <code>src/assets/coaches/</code>.
+                        Leave blank to show initials instead until a photo is added.
+                      </p>
                     </div>
                   </div>
                 </div>

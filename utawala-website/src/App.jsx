@@ -12,6 +12,33 @@ const GALLERY_PHOTOS = galleryPaths.map((path) => galleryModules[path].default);
 const teamPhotoPath = galleryPaths.find((path) => path.toLowerCase().includes('whatsapp'));
 const TEAM_PHOTO = teamPhotoPath ? galleryModules[teamPhotoPath].default : null;
 
+// Coach headshots: prefers the exact filename typed in the admin dashboard;
+// falls back to matching the coach's first name in a filename if left blank.
+const coachModules = import.meta.glob('/src/assets/coaches/*.{jpg,jpeg,JPG,JPEG,png,PNG,webp,WEBP}', { eager: true });
+const coachPaths = Object.keys(coachModules);
+function findCoachPhoto(coach) {
+  if (coach.photo) {
+    const exact = coachPaths.find((path) => path.toLowerCase().endsWith('/' + coach.photo.toLowerCase()));
+    if (exact) return coachModules[exact].default;
+  }
+  const firstName = coach.name.replace(/^coach\s+/i, '').split(' ')[0].toLowerCase();
+  const match = coachPaths.find((path) => path.toLowerCase().includes(firstName));
+  return match ? coachModules[match].default : null;
+}
+function getInitials(coachName) {
+  const cleaned = coachName.replace(/^coach\s+/i, '');
+  return cleaned
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('');
+}
+
+// Paste your Google Apps Script Web App URL here once deployed
+// (Extensions > Apps Script > Deploy > Web app, in the Google Sheet).
+const GOOGLE_SHEET_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
 export default function App() {
   const [page, setPage] = useState('home');
   const [ctaExpanded, setCtaExpanded] = useState(false);
@@ -109,12 +136,13 @@ export default function App() {
       event: formData.get('event') === 'Other' ? formData.get('customEvent') : formData.get('event'),
       timestamp: new Date().toLocaleString(),
     };
+    // Make sure the resolved event value (not just "Other") is what gets sent
+    formData.set('event', data.event);
 
     try {
-      const response = await fetch(form.action, {
+      const response = await fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
         body: formData,
-        headers: { Accept: 'application/json' },
       });
 
       if (response.ok) {
@@ -345,13 +373,21 @@ export default function App() {
           <h2>Our Coaching Team</h2>
 
           <div className="card-grid">
-            {data.coaches.map((coach, i) => (
-              <div className="card" key={i}>
-                <h3>{coach.name}</h3>
-                <p><strong>{coach.title}</strong></p>
-                <p>{coach.bio}</p>
-              </div>
-            ))}
+            {data.coaches.map((coach, i) => {
+              const photo = findCoachPhoto(coach);
+              return (
+                <div className="card" key={i}>
+                  {photo ? (
+                    <img key={photo} src={photo} alt={coach.name} className="coach-photo" />
+                  ) : (
+                    <div className="coach-photo coach-avatar-fallback">{getInitials(coach.name)}</div>
+                  )}
+                  <h3>{coach.name}</h3>
+                  <p><strong>{coach.title}</strong></p>
+                  <p>{coach.bio}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -360,7 +396,7 @@ export default function App() {
           <h2>Bookings</h2>
 
           <div className="form-container">
-            <form id="contactForm" ref={formRef} action="https://formspree.io/f/mnnebrqo" method="POST" onSubmit={handleSubmit}>
+            <form id="contactForm" ref={formRef} action={GOOGLE_SHEET_URL} method="POST" onSubmit={handleSubmit}>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="contactName">👤 Full Name *</label>
