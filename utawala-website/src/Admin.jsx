@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, Save, X, Plus, Trash2, Edit2, Lock, Unlock } from 'lucide-react';
 import { defaultContent, deepMerge } from './siteContent';
+import { fetchContent, saveContent as saveContentRemote } from './contentApi';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,19 +20,20 @@ const AdminDashboard = () => {
   const loadContent = async () => {
     setLoading(true);
     try {
-      if (window.storage) {
-        const result = await window.storage.get('utawala-content');
-        if (result && result.value) {
-          setContent((prev) => deepMerge(prev, JSON.parse(result.value)));
-        }
-      } else {
+      const remote = await fetchContent();
+      if (remote && Object.keys(remote).length > 0) {
+        setContent((prev) => deepMerge(prev, remote));
+      }
+    } catch (error) {
+      console.log('Could not reach content backend, falling back to this device\'s local copy');
+      try {
         const saved = localStorage.getItem('utawala-content');
         if (saved) {
           setContent((prev) => deepMerge(prev, JSON.parse(saved)));
         }
+      } catch (e) {
+        // no local copy either, defaults apply
       }
-    } catch (error) {
-      console.log('No saved content found, using defaults');
     }
     setLoading(false);
   };
@@ -40,15 +42,12 @@ const AdminDashboard = () => {
     setSaving(true);
     setMessage('');
     try {
-      if (window.storage) {
-        await window.storage.set('utawala-content', JSON.stringify(content));
-      } else {
-        localStorage.setItem('utawala-content', JSON.stringify(content));
-      }
-      setMessage('✓ Content saved successfully!');
+      await saveContentRemote(content);
+      localStorage.setItem('utawala-content', JSON.stringify(content));
+      setMessage('✓ Content saved successfully! Changes are now live for everyone.');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      setMessage('✗ Error saving content');
+      setMessage('✗ Error saving content — check your internet connection and try again');
     }
     setSaving(false);
   };
@@ -389,7 +388,7 @@ const AdminDashboard = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-800">Coaching Team</h2>
                 <button
-                  onClick={() => addArrayItem('coaches', { name: '', title: '', bio: '', photo: '' })}
+                  onClick={() => addArrayItem('coaches', { name: '', title: '', bio: '' })}
                   className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
                 >
                   <Plus className="w-4 h-4" />
@@ -437,20 +436,6 @@ const AdminDashboard = () => {
                         placeholder="Coach biography..."
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                       />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Photo filename</label>
-                      <input
-                        type="text"
-                        value={coach.photo || ''}
-                        onChange={(e) => updateArrayItem('coaches', index, { ...coach, photo: e.target.value })}
-                        placeholder="e.g., perpetual.jpg"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Type the exact filename of the photo you've saved in <code>src/assets/coaches/</code>.
-                        Leave blank to show initials instead until a photo is added.
-                      </p>
                     </div>
                   </div>
                 </div>
