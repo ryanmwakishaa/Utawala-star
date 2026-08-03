@@ -13,6 +13,29 @@ const GALLERY_PHOTOS = galleryPaths.map((path) => galleryModules[path].default);
 const teamPhotoPath = galleryPaths.find((path) => path.toLowerCase().includes('whatsapp'));
 const TEAM_PHOTO = teamPhotoPath ? galleryModules[teamPhotoPath].default : null;
 
+// Coach headshots: prefers the exact filename typed in the admin dashboard;
+// falls back to matching the coach's first name in a filename if left blank.
+const coachModules = import.meta.glob('/src/assets/coaches/*.{jpg,jpeg,JPG,JPEG,png,PNG,webp,WEBP}', { eager: true });
+const coachPaths = Object.keys(coachModules);
+function findCoachPhoto(coach) {
+  if (coach.photo) {
+    const exact = coachPaths.find((path) => path.toLowerCase().endsWith('/' + coach.photo.toLowerCase()));
+    if (exact) return coachModules[exact].default;
+  }
+  const firstName = coach.name.replace(/^coach\s+/i, '').split(' ')[0].toLowerCase();
+  const match = coachPaths.find((path) => path.toLowerCase().includes(firstName));
+  return match ? coachModules[match].default : null;
+}
+function getInitials(coachName) {
+  const cleaned = coachName.replace(/^coach\s+/i, '');
+  return cleaned
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('');
+}
+
 export default function App() {
   const [page, setPage] = useState('home');
   const [ctaExpanded, setCtaExpanded] = useState(false);
@@ -356,13 +379,21 @@ export default function App() {
           <h2>Our Coaching Team</h2>
 
           <div className="card-grid">
-            {data.coaches.map((coach, i) => (
-              <div className="card" key={i}>
-                <h3>{coach.name}</h3>
-                <p><strong>{coach.title}</strong></p>
-                <p>{coach.bio}</p>
-              </div>
-            ))}
+            {data.coaches.map((coach, i) => {
+              const photo = findCoachPhoto(coach);
+              return (
+                <div className="card" key={i}>
+                  {photo ? (
+                    <img key={photo} src={photo} alt={coach.name} className="coach-photo" />
+                  ) : (
+                    <div className="coach-photo coach-avatar-fallback">{getInitials(coach.name)}</div>
+                  )}
+                  <h3>{coach.name}</h3>
+                  <p><strong>{coach.title}</strong></p>
+                  <p>{coach.bio}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
 
